@@ -1,30 +1,25 @@
 name: CI
 on: pull_request
 jobs:
-  build:
-    name: Lint and Build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-env: [ 'development', 'production' ]
-    env:
-        NODE_ENV: ${{ matrix.node-env }}
-    steps:
-      - name: Checkout 
-        uses: actions/checkout@v4
+    build:
+        name: Lint and Build
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-env: ["development", "production"]
+        env:
+            NODE_ENV: ${{ matrix.node-env }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Setup Node 
-        uses: actions/setup-node@v4.0.2
-        with:
-          node-version: 16
+            - name: Setup Bun
+              uses: oven-sh/bun@v1
 
-      - run: yarn install
+            - run: bun install
 
-      - run: yarn build
+            - run: bun lint
+              if: ${{ matrix.node-env == 'development' }}
 
-      - run: yarn lint
-        if: ${{ matrix.node-env == 'development' }}
-
-      - run: yarn test
-        if: ${{ matrix.node-env == 'development' }}
-
+            - run: bun test
+              if: ${{ matrix.node-env == 'development' }}
